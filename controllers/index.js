@@ -65,7 +65,7 @@ const changeContact = async (req, res, next) => {
               }
             }
           );
-        res.status(200).json({ message: 'Contact has been updated', ID });
+        res.status(204).json({ message: 'Contact has been updated', ID });
     } catch (error) {
         next(error);
     }
