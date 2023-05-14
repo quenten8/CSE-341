@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "cse341-6g62.onrender.com",
   "basePath": "/",
   "schemes": [
     "http"

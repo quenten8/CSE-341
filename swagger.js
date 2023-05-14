@@ -6,7 +6,7 @@ const doc = {
       description: 'Description',
       version: '1.0.0',
     },
-    host: 'https://cse341-6g62.onrender.com',
+    host: 'cse341-6g62.onrender.com',
     schemes: ['http'],
     produces: ['application/json'],
     consumes: ['application/json'],
