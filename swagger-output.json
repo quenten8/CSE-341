@@ -8,9 +8,10 @@
   "host": "cse341-6g62.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
+    "bearerAuth": {}
   },
   "consumes": [
     "application/json"

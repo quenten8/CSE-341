@@ -7,7 +7,7 @@ const doc = {
       version: '1.0.0',
     },
     host: 'cse341-6g62.onrender.com',
-    schemes: ['http'],
+    schemes: ['https'],
     produces: ['application/json'],
     consumes: ['application/json'],
     securityDefinitions: {
