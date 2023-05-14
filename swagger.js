@@ -12,9 +12,6 @@ const doc = {
     consumes: ['application/json'],
     securityDefinitions: {
       bearerAuth: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'Authorization',
       },
     },
   };
