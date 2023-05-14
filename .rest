@@ -49,7 +49,7 @@ content-type: application/json
 }
 
 ###
-PUT https://cse341-6g62.onrender.com/contacts/change/644dcda539c6c41fa04422bf HTTP/1.1
+PUT https://cse341-6g62.onrender.com/contacts/change/64530f58d0321ca3533facba HTTP/1.1
 content-type: application/json
 
 {
@@ -61,4 +61,4 @@ content-type: application/json
 }
 
 ###
-DELETE https://cse341-6g62.onrender.com/contacts/delete/644dcda539c6c41fa04422bf
+DELETE https://cse341-6g62.onrender.com/contacts/delete/64530f58d0321ca3533facba
