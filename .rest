@@ -5,6 +5,16 @@ GET http://localhost:8080/recipes
 ###
 POST http://localhost:8080/recipe/add
 
+{
+    "title":"",
+    "description":"",
+    "ingredients":"",
+    "instructions":"",
+    "time":"",
+    "servingSize":"",
+    "dateAdded":""
+}
+
 ###
 DELETE http://localhost:8080/recipes/delete
 
@@ -13,3 +23,4 @@ DELETE http://localhost:8080/recipes/delete
 ###
 
 
+https://recipes-n32s.onrender.com
