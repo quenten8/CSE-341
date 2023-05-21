@@ -1,64 +1,15 @@
 //LOCAL
-
-GET http://localhost:8080/contacts
+###
+GET http://localhost:8080/recipes
 
 ###
-POST http://localhost:8080/contacts/add HTTP/1.1
-content-type: application/json
-
-{
-    "firstname":"test",
-    "lastname":"test",
-    "email":"test@email.com",
-    "favoriteColor":"Blue",
-    "birthday":"day year"
-}
+POST http://localhost:8080/recipe/add
 
 ###
-PUT http://localhost:8080/contacts/change/6452be69aaca0bee2a00e429 HTTP/1.1
-content-type: application/json
+DELETE http://localhost:8080/recipes/delete
 
-{
-    "firstname":"hello",
-    "lastname":"testChange",
-    "email":"test@email.com",
-    "favoriteColor":"Red",
-    "birthday":"day year"
-}
 
+//ONLINE
 ###
-DELETE http://localhost:8080/contacts/delete/6452be69aaca0bee2a00e429
 
 
-
-//RENDER
-
-###
-GET https://cse341-6g62.onrender.com/contacts
-
-###
-POST https://cse341-6g62.onrender.com/contacts/add HTTP/1.1
-content-type: application/json
-
-{
-    "firstname":"hello",
-    "lastname":"test",
-    "email":"test@email.com",
-    "favoriteColor":"Blue",
-    "birthday":"day year"
-}
-
-###
-PUT https://cse341-6g62.onrender.com/contacts/change/646055d7194e6a0eb877be32 HTTP/1.1
-content-type: application/json
-
-{
-    "firstname":"testChange",
-    "lastname":"testChange",
-    "email":"test@email.com",
-    "favoriteColor":"Red",
-    "birthday":"day year"
-}
-
-###
-DELETE https://cse341-6g62.onrender.com/contacts/delete/64530f58d0321ca3533facba

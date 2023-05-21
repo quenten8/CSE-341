@@ -1,15 +1,13 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
-const mongodb = require('./db/connect');
-const router = require('./routes/index.js');
-
-// Swagger
+const mongodb = require('./db_connect');
+const app = express();
+const routes = require('./routes')(express, app);
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger-output.json');
+const swaggerOutput = require('./swagger-output.json');
 
 // Choose port
-const port = process.env.PORT || 8080;
+const port = Number(process.env.PORT) || 8080;
 
 // Middleware
 app.use(bodyParser.json());
@@ -19,15 +17,15 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
 
 // Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
 // Routes
-app.use('/', router);
+app.use('/', routes);
 
 // Initialize MongoDB connection
 mongodb.initDb((err, db) => {
