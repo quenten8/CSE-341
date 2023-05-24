@@ -27,4 +27,4 @@ DELETE http://localhost:8080/recipes/delete/646e70ce12496c6a3e12532e
 ###
 
 
-https://recipes-n32s.onrender.com
+https://recipes-n32s.onrender.com/
