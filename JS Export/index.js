@@ -1,7 +1,7 @@
 "use strict";
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongodb = require('./db_connect');
+const dbConnect = require('./db_connect');
 const app = express();
 const routes = require('./routes')(express, app);
 const swaggerUi = require('swagger-ui-express');
@@ -23,7 +23,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 // Routes
 app.use('/', routes);
 // Initialize MongoDB connection
-mongodb.initDb((err, db) => {
+dbConnect.initDb((err, db) => {
     if (err) {
         console.error('Error connecting to MongoDB:', err);
     }

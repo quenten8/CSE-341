@@ -1,22 +1,26 @@
 //LOCAL
 ###
+GET http://localhost:8080/
+
+###
 GET http://localhost:8080/recipes
 
 ###
-POST http://localhost:8080/recipe/add
+POST http://localhost:8080/recipes/add HTTP/1.1
+content-type: application/json
 
 {
-    "title":"",
-    "description":"",
-    "ingredients":"",
-    "instructions":"",
-    "time":"",
-    "servingSize":"",
-    "dateAdded":""
+    "title":"test",
+    "description":"test",
+    "ingredients":"test",
+    "instructions":"test",
+    "time":"test",
+    "servingSize":"test",
+    "dateAdded":"test"
 }
 
 ###
-DELETE http://localhost:8080/recipes/delete
+DELETE http://localhost:8080/recipes/delete/646e70ce12496c6a3e12532e
 
 
 //ONLINE

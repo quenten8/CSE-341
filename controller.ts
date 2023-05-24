@@ -1,20 +1,22 @@
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongodb';
-const { getDb } = require('./db_connect');
+const { ObjectId } = require('mongodb');
+const dbConnect = require('./db_connect');
 
 export const getAllRecipes = async (req: Request, res: Response) => {
     try {
-        const recipes = await getDb().collection('recipes').find().toArray();
-        res.status(200).json(recipes);
+        const recipes = await dbConnect.getDb().db().collection('recipes').find().toArray();
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).send(JSON.stringify(recipes, null, 2));
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
+        console.log(error)
     }
 };
 
 export const getRecipe = async (req: Request, res: Response) => {
     try {
         const recipeId = new ObjectId(req.params.id);
-        const recipe = await getDb().collection('recipes').findOne({ _id: recipeId });
+        const recipe = await dbConnect.getDb().db().collection('recipes').findOne({ _id: recipeId });
 
         if (recipe) {
             res.status(200).json(recipe);
@@ -34,21 +36,9 @@ export const addRecipe = async (req, res, next) => {
       if (!title || !description || !ingredients || !instructions || !time || !servingSize || !dateAdded) {
         res.status(400).json({ message: 'All fields are required' });
         return;
-      }
-      
-      // Create a new recipe object
-      const recipe = {
-        title,
-        description,
-        ingredients,
-        instructions,
-        time,
-        servingSize,
-        dateAdded
-      };
-      
+      }      
       // Insert the recipe into the database
-      const result = await getDb().collection('recipes').insertOne(recipe);
+      const result = await dbConnect.getDb().db().collection('recipes').insertOne(req.body);
       
       res.status(201).json({ id: result.insertedId });
     } catch (error) {
@@ -59,7 +49,7 @@ export const addRecipe = async (req, res, next) => {
 export const deleteRecipe = async (req: Request, res: Response) => {
     try {
         const recipeId = new ObjectId(req.params.id);
-        const result = await getDb().collection('recipes').deleteOne({ _id: recipeId });
+        const result = await dbConnect.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
 
         if (result.deletedCount === 1) {
             res.status(200).json({ message: 'Recipe deleted' });
@@ -73,7 +63,7 @@ export const deleteRecipe = async (req: Request, res: Response) => {
 
 export const deleteAll = async (req: Request, res: Response) => {
     try {
-        const result = await getDb().collection('recipes').deleteMany({});
+        const result = await dbConnect.getDb().db().collection('recipes').deleteMany({});
 
         res.status(200).json({ message: 'All recipes deleted' });
     } catch (error) {

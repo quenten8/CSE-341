@@ -10,22 +10,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAll = exports.deleteRecipe = exports.addRecipe = exports.getRecipe = exports.getAllRecipes = void 0;
-const mongodb_1 = require("mongodb");
-const { getDb } = require('./db_connect');
+const { ObjectId } = require('mongodb');
+const dbConnect = require('./db_connect');
 const getAllRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const recipes = yield getDb().collection('recipes').find().toArray();
-        res.status(200).json(recipes);
+        const recipes = yield dbConnect.getDb().db().collection('recipes').find().toArray();
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).send(JSON.stringify(recipes, null, 2));
     }
     catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
+        console.log(error);
     }
 });
 exports.getAllRecipes = getAllRecipes;
 const getRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const recipeId = new mongodb_1.ObjectId(req.params.id);
-        const recipe = yield getDb().collection('recipes').findOne({ _id: recipeId });
+        const recipeId = new ObjectId(req.params.id);
+        const recipe = yield dbConnect.getDb().db().collection('recipes').findOne({ _id: recipeId });
         if (recipe) {
             res.status(200).json(recipe);
         }
@@ -46,18 +48,8 @@ const addRecipe = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             res.status(400).json({ message: 'All fields are required' });
             return;
         }
-        // Create a new recipe object
-        const recipe = {
-            title,
-            description,
-            ingredients,
-            instructions,
-            time,
-            servingSize,
-            dateAdded
-        };
         // Insert the recipe into the database
-        const result = yield getDb().collection('recipes').insertOne(recipe);
+        const result = yield dbConnect.getDb().db().collection('recipes').insertOne(req.body);
         res.status(201).json({ id: result.insertedId });
     }
     catch (error) {
@@ -67,8 +59,8 @@ const addRecipe = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 exports.addRecipe = addRecipe;
 const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const recipeId = new mongodb_1.ObjectId(req.params.id);
-        const result = yield getDb().collection('recipes').deleteOne({ _id: recipeId });
+        const recipeId = new ObjectId(req.params.id);
+        const result = yield dbConnect.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
         if (result.deletedCount === 1) {
             res.status(200).json({ message: 'Recipe deleted' });
         }
@@ -83,7 +75,7 @@ const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.deleteRecipe = deleteRecipe;
 const deleteAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield getDb().collection('recipes').deleteMany({});
+        const result = yield dbConnect.getDb().db().collection('recipes').deleteMany({});
         res.status(200).json({ message: 'All recipes deleted' });
     }
     catch (error) {
