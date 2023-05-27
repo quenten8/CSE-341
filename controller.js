@@ -1,33 +1,31 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAll = exports.deleteRecipe = exports.addRecipe = exports.getRecipe = exports.getAllRecipes = void 0;
-const { ObjectId } = require('mongodb');
-const dbConnect = require('./db_connect');
-const getAllRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.deleteAll = exports.deleteRecipe = exports.changeRecipe = exports.addRecipe = exports.getRecipe = exports.getAllRecipes = void 0;
+const express_validator_1 = require("express-validator");
+const mongodb_1 = require("mongodb");
+const db_connect_1 = __importDefault(require("./db_connect"));
+const getAllRecipes = async (req, res) => {
     try {
-        const recipes = yield dbConnect.getDb().db().collection('recipes').find().toArray();
+        const recipes = await db_connect_1.default.getDb().db().collection('recipes').find().toArray();
         res.setHeader('Content-Type', 'application/json');
         res.status(200).send(JSON.stringify(recipes, null, 2));
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
-        console.log(error);
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-});
+};
 exports.getAllRecipes = getAllRecipes;
-const getRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getRecipe = async (req, res) => {
     try {
-        const recipeId = new ObjectId(req.params.id);
-        const recipe = yield dbConnect.getDb().db().collection('recipes').findOne({ _id: recipeId });
+        const recipeId = new mongodb_1.ObjectId(req.params.id);
+        if (!mongodb_1.ObjectId.isValid(recipeId)) {
+            return res.status(400).json({ message: 'Invalid recipe ID' });
+        }
+        const recipe = await db_connect_1.default.getDb().db().collection('recipes').findOne({ _id: recipeId });
         if (recipe) {
             res.status(200).json(recipe);
         }
@@ -36,31 +34,79 @@ const getRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-});
+};
 exports.getRecipe = getRecipe;
-const addRecipe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const addRecipe = async (req, res, next) => {
     try {
-        const { title, description, ingredients, instructions, time, servingSize, dateAdded } = req.body;
-        // Check if all required fields are provided
-        if (!title || !description || !ingredients || !instructions || !time || !servingSize || !dateAdded) {
-            res.status(400).json({ message: 'All fields are required' });
-            return;
+        const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
+        // Data validation
+        const errors = (0, express_validator_1.validationResult)(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
         }
-        // Insert the recipe into the database
-        const result = yield dbConnect.getDb().db().collection('recipes').insertOne(req.body);
+        if (!title || !description || !ingredients) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+        // Insert recipe into database
+        const result = await db_connect_1.default.getDb().db().collection('recipes').insertOne({
+            title,
+            description,
+            ingredients,
+            instructions,
+            time,
+            servingSize,
+            dateAdded,
+        });
         res.status(201).json({ id: result.insertedId });
     }
     catch (error) {
         next(error);
     }
-});
+};
 exports.addRecipe = addRecipe;
-const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const changeRecipe = async (req, res, next) => {
     try {
-        const recipeId = new ObjectId(req.params.id);
-        const result = yield dbConnect.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
+        const recipeId = new mongodb_1.ObjectId(req.params.id);
+        const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
+        // Data validation
+        const errors = (0, express_validator_1.validationResult)(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        if (!title || !description || !ingredients) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+        // Update recipe in the database
+        const result = await db_connect_1.default.getDb().db().collection('recipes').updateOne({ _id: recipeId }, {
+            $set: {
+                title,
+                description,
+                ingredients,
+                instructions,
+                time,
+                servingSize,
+                dateAdded,
+            },
+        });
+        if (result.matchedCount === 1) {
+            res.status(200).json({ message: 'Recipe updated' });
+        }
+        else {
+            res.status(404).json({ message: 'Recipe not found' });
+        }
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.changeRecipe = changeRecipe;
+const deleteRecipe = async (req, res) => {
+    try {
+        const recipeId = new mongodb_1.ObjectId(req.params.id);
+        const result = await db_connect_1.default.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
         if (result.deletedCount === 1) {
             res.status(200).json({ message: 'Recipe deleted' });
         }
@@ -69,17 +115,19 @@ const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-});
+};
 exports.deleteRecipe = deleteRecipe;
-const deleteAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteAll = async (req, res) => {
     try {
-        const result = yield dbConnect.getDb().db().collection('recipes').deleteMany({});
+        const result = await db_connect_1.default.getDb().db().collection('recipes').deleteMany({});
         res.status(200).json({ message: 'All recipes deleted' });
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-});
+};
 exports.deleteAll = deleteAll;

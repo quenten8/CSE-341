@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = require('dotenv');
 dotenv.config();
 const MongoClient = require('mongodb').MongoClient;
@@ -23,7 +24,7 @@ const getDb = () => {
     }
     return _db;
 };
-module.exports = {
+exports.default = {
     initDb,
     getDb,
 };

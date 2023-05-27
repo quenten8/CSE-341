@@ -20,11 +20,23 @@ content-type: application/json
 }
 
 ###
-DELETE http://localhost:8080/recipes/delete/646e70ce12496c6a3e12532e
+PUT http://localhost:8080/recipes/change/64728e97214216c5b07f0875 HTTP/1.1
+content-type: application/json
+
+{
+    "title":"hello",
+    "description":"test2",
+    "ingredients":"test2",
+    "instructions":"test2",
+    "time":"test2",
+    "servingSize":"test2",
+    "dateAdded":"test2"
+}
+
+###
+DELETE http://localhost:8080/recipes/delete/6472805e7ffbca9d3bd609f8
 
 
 //ONLINE
 ###
-
-
 https://recipes-n32s.onrender.com/

@@ -1,72 +1,135 @@
 import { Request, Response } from 'express';
-const { ObjectId } = require('mongodb');
-const dbConnect = require('./db_connect');
+import { validationResult, body } from 'express-validator';
+import { ObjectId } from 'mongodb';
+import dbConnect from './db_connect';
 
 export const getAllRecipes = async (req: Request, res: Response) => {
-    try {
-        const recipes = await dbConnect.getDb().db().collection('recipes').find().toArray();
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).send(JSON.stringify(recipes, null, 2));
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
-        console.log(error)
-    }
+  try {
+    const recipes = await dbConnect.getDb().db().collection('recipes').find().toArray();
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(JSON.stringify(recipes, null, 2));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+  }
 };
 
 export const getRecipe = async (req: Request, res: Response) => {
-    try {
-        const recipeId = new ObjectId(req.params.id);
-        const recipe = await dbConnect.getDb().db().collection('recipes').findOne({ _id: recipeId });
+  try {
+    const recipeId = new ObjectId(req.params.id);
 
-        if (recipe) {
-            res.status(200).json(recipe);
-        } else {
-            res.status(404).json({ message: 'Recipe not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+    if (!ObjectId.isValid(recipeId)) {
+      return res.status(400).json({ message: 'Invalid recipe ID' });
     }
+
+    const recipe = await dbConnect.getDb().db().collection('recipes').findOne({ _id: recipeId });
+
+    if (recipe) {
+      res.status(200).json(recipe);
+    } else {
+      res.status(404).json({ message: 'Recipe not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+  }
 };
 
 export const addRecipe = async (req, res, next) => {
-    try {
-      const { title, description, ingredients, instructions, time, servingSize, dateAdded } = req.body;
-      
-      // Check if all required fields are provided
-      if (!title || !description || !ingredients || !instructions || !time || !servingSize || !dateAdded) {
-        res.status(400).json({ message: 'All fields are required' });
-        return;
-      }      
-      // Insert the recipe into the database
-      const result = await dbConnect.getDb().db().collection('recipes').insertOne(req.body);
-      
-      res.status(201).json({ id: result.insertedId });
-    } catch (error) {
-      next(error);
+  try {
+    const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
+
+    // Data validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  };
+
+    if (!title || !description || !ingredients) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Insert recipe into database
+    const result = await dbConnect.getDb().db().collection('recipes').insertOne({
+      title,
+      description,
+      ingredients,
+      instructions,
+      time,
+      servingSize,
+      dateAdded,
+    });
+
+    res.status(201).json({ id: result.insertedId });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changeRecipe = async (req, res, next) => {
+  try {
+    const recipeId = new ObjectId(req.params.id);
+    const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
+
+    // Data validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    if (!title || !description || !ingredients) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Update recipe in the database
+    const result = await dbConnect.getDb().db().collection('recipes').updateOne(
+      { _id: recipeId },
+      {
+        $set: {
+          title,
+          description,
+          ingredients,
+          instructions,
+          time,
+          servingSize,
+          dateAdded,
+        },
+      }
+    );
+
+    if (result.matchedCount === 1) {
+      res.status(200).json({ message: 'Recipe updated' });
+    } else {
+      res.status(404).json({ message: 'Recipe not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const deleteRecipe = async (req: Request, res: Response) => {
-    try {
-        const recipeId = new ObjectId(req.params.id);
-        const result = await dbConnect.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
+  try {
+    const recipeId = new ObjectId(req.params.id);
+    const result = await dbConnect.getDb().db().collection('recipes').deleteOne({ _id: recipeId });
 
-        if (result.deletedCount === 1) {
-            res.status(200).json({ message: 'Recipe deleted' });
-        } else {
-            res.status(404).json({ message: 'Recipe not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+    if (result.deletedCount === 1) {
+      res.status(200).json({ message: 'Recipe deleted' });
+    } else {
+      res.status(404).json({ message: 'Recipe not found' });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+  }
 };
 
 export const deleteAll = async (req: Request, res: Response) => {
-    try {
-        const result = await dbConnect.getDb().db().collection('recipes').deleteMany({});
+  try {
+    const result = await dbConnect.getDb().db().collection('recipes').deleteMany({});
 
-        res.status(200).json({ message: 'All recipes deleted' });
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
+    res.status(200).json({ message: 'All recipes deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+  }
 };

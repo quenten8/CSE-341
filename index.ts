@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const dbConnect = require('./db_connect');
 const app = express();
 const routes = require('./routes')(express, app);
 const swaggerUi = require('swagger-ui-express');
 const swaggerOutput = require('./swagger-output.json');
+
+import dbConnect from './db_connect';
 
 // Choose port
 const port = Number(process.env.PORT) || 8080;

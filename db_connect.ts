@@ -26,7 +26,7 @@ const getDb = () => {
   return _db;
 };
 
-module.exports = {
+export default {
   initDb,
   getDb,
 };
