@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recipe</title>
+</head>
+<body>
+  <h1>Recipe Details</h1>
+  <div id="recipe"></div>
+
+  <script>
+    // JavaScript code to fetch and display a single recipe
+    const recipeId = /* get the recipe ID from the URL or elsewhere */;
+    fetch(`/recipes/${recipeId}`)
+      .then(response => response.json())
+      .then(recipe => {
+        const recipeDiv = document.getElementById('recipe');
+        recipeDiv.innerHTML = `
+          <h3>${recipe.title}</h3>
+          <p>${recipe.description}</p>
+          <ul>
+            ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+          </ul>
+          <p>${recipe.instructions}</p>
+          <p>Time: ${recipe.time}</p>
+          <p>Serving Size: ${recipe.servingSize}</p>
+        `;
+      })
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>

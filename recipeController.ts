@@ -16,6 +16,8 @@ export const getAllRecipes = async (req: Request, res: Response) => {
 
 export const getRecipe = async (req: Request, res: Response) => {
   try {
+    console.log('Received recipe data:', req.body);
+
     const recipeId = new ObjectId(req.params.id);
 
     if (!ObjectId.isValid(recipeId)) {
@@ -37,6 +39,8 @@ export const getRecipe = async (req: Request, res: Response) => {
 
 export const addRecipe = async (req, res, next) => {
   try {
+    console.log('Received recipe data:', req.body);
+
     const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
 
     // Data validation

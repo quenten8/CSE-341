@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Change Recipe</title>
+</head>
+<body>
+  <h1>Change Recipe</h1>
+  <form id="changeRecipeForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="ingredients">Ingredients:</label>
+    <textarea id="ingredients" name="ingredients" required></textarea>
+
+    <label for="instructions">Instructions:</label>
+    <textarea id="instructions" name="instructions" required></textarea>
+
+    <label for="time">Time:</label>
+    <input type="text" id="time" name="time" required>
+
+    <label for="servingSize">Serving Size:</label>
+    <input type="text" id="servingSize" name="servingSize" required>
+
+    <button type="submit">Change Recipe</button>
+  </form>
+
+  <script>
+    const changeRecipeForm = document.getElementById('changeRecipeForm');
+
+    changeRecipeForm.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const ingredients = document.getElementById('ingredients').value;
+      const instructions = document.getElementById('instructions').value;
+      const time = document.getElementById('time').value;
+      const servingSize = document.getElementById('servingSize').value;
+
+      const recipeData = {
+        title,
+        description,
+        ingredients,
+        instructions,
+        time,
+        servingSize
+      };
+
+      const recipeId = /* get the recipe ID from the URL or elsewhere */;
+
+      fetch(`/recipes/${recipeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recipeData),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Handle the response or redirect to another page
+      })
+      .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>

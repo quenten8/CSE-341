@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Recipes</title>
+</head>
+<body>
+  <h1>All Recipes</h1>
+  <div id="recipes"></div>
+
+  <script>
+    // JavaScript code to fetch and display all recipes
+    fetch('/recipes')
+      .then(response => response.json())
+      .then(recipes => {
+        const recipesDiv = document.getElementById('recipes');
+
+        recipes.forEach(recipe => {
+          const recipeDiv = document.createElement('div');
+          recipeDiv.innerHTML = `
+            <h3>${recipe.title}</h3>
+            <p>${recipe.description}</p>
+            <ul>
+              ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+            </ul>
+          `;
+          recipesDiv.appendChild(recipeDiv);
+        });
+      })
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>

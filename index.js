@@ -9,9 +9,21 @@ const app = express();
 const routes = require('./routes')(express, app);
 const swaggerUi = require('swagger-ui-express');
 const swaggerOutput = require('./swagger-output.json');
+const passport = require('passport');
+const session = require('express-session');
 const db_connect_1 = __importDefault(require("./db_connect"));
 // Choose port
 const port = Number(process.env.PORT) || 8080;
+//Session
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false
+}));
+//Passport
+require('./passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 // Middleware
 app.use(bodyParser.json());
 // CORS handling

@@ -21,6 +21,7 @@ const getAllRecipes = async (req, res) => {
 exports.getAllRecipes = getAllRecipes;
 const getRecipe = async (req, res) => {
     try {
+        console.log('Received recipe data:', req.body);
         const recipeId = new mongodb_1.ObjectId(req.params.id);
         if (!mongodb_1.ObjectId.isValid(recipeId)) {
             return res.status(400).json({ message: 'Invalid recipe ID' });
@@ -41,6 +42,7 @@ const getRecipe = async (req, res) => {
 exports.getRecipe = getRecipe;
 const addRecipe = async (req, res, next) => {
     try {
+        console.log('Received recipe data:', req.body);
         const { title, description, ingredients, instructions, time, servingSize, dateAdded = Date() } = req.body;
         // Data validation
         const errors = (0, express_validator_1.validationResult)(req);
