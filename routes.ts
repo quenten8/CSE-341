@@ -32,9 +32,9 @@ module.exports = function (express) {
         //Logout
         router.get('/logout', (req, res) => {
             req.logout(() => {
-                res.redirect('https://accounts.google.com/Logout');
+
             });
-            res.redirect('/')
+            res.redirect('https://accounts.google.com/Logout');
         });
         
     //User dashboard
