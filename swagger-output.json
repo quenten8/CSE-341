@@ -48,7 +48,7 @@
         "responses": {}
       }
     },
-    "/contacts/add": {
+    "/recipes/add": {
       "post": {
         "description": "",
         "parameters": [
