@@ -20,7 +20,7 @@ module.exports = function (express) {
 
     //Authentication routes
         router.get('/', ensureGuest, (req, res) => {
-            res.sendFile('./frontend/dashboard.html', { root: __dirname });
+            res.redirect('/google')
         });
         //Authenticate with google
         router.get('/google',passport.authenticate('google', {scope: ['profile']}))
@@ -32,9 +32,9 @@ module.exports = function (express) {
         //Logout
         router.get('/logout', (req, res) => {
             req.logout(() => {
-
+                res.redirect('https://accounts.google.com/Logout');
             });
-            res.redirect('https://accounts.google.com/Logout');
+            
         });
         
     //User dashboard
