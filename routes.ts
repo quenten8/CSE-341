@@ -20,7 +20,7 @@ module.exports = function (express) {
 
     //Authentication routes
         router.get('/', ensureGuest, (req, res) => {
-            res.sendFile('./frontend/index.html', { root: __dirname });
+            res.sendFile('./frontend/dashboard.html', { root: __dirname });
         });
         //Authenticate with google
         router.get('/google',passport.authenticate('google', {scope: ['profile']}))
